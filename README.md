@@ -11,7 +11,7 @@
 ```
 Node.js驱动用的是mongodb
 ```
- [Mongo-Nodejs-Dirver-API]:http://mongodb.github.io/node-mongodb-native/3.0/api/ 这是官方的api文档，由于百度查询的Node.js-Mongodb语法在3.0.2版本使用有问题，所以还是推荐查阅api
+ [Mongo-Nodejs-Dirver-API]: http://mongodb.github.io/node-mongodb-native/3.0/api/ 这是官方的api文档，由于百度查询的Node.js-Mongodb语法在3.0.2版本使用有问题，所以还是推荐查阅api
 
 ### 3.选用缓存：redis
 
