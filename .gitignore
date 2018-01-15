@@ -1,0 +1,5 @@
+# windows
+node_modules/
+
+# log file
+*.log
