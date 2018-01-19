@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const QUERY_UTIL = require('./../lib/music/GetData');
-const SLOVE_DATA = require('./../lib/music/slove_data');
+const QUERY_UTIL = require('./../lib/net/get_data');
+const SLOVE_DATA = require('./../lib/slove/slove_data');
 /* GET home page. */
 router.get('/', function(req, res, next) {
  	let id = req.query.tinguid;
