@@ -9,7 +9,9 @@ router.get("/", function(req, res, next) {
     let offset = req.query.offset || 0;
     let limit = req.query.size || 20;
     res.type("text/javascript");
-    http_redis.request_billboard_data_save();
+    REDIS.getStringByKey("popular_list_name").then(function(name_data){
+        console.log(name_data);
+    });
     REDIS.getBillBoardFromRedis(("type_" + type), (offset / 20)).then((redis_data) => {
         if (redis_data) {
         	console.log("i'm in redis");
