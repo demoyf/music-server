@@ -9,29 +9,32 @@ router.get("/", function(req, res, next) {
     let offset = req.query.offset || 0;
     let limit = req.query.size || 20;
     res.type("text/javascript");
-    REDIS.getStringByKey("popular_list_name").then(function(name_data){
-        console.log(name_data);
-    });
-    REDIS.getBillBoardFromRedis(("type_" + type), (offset / 20)).then((redis_data) => {
-        if (redis_data) {
-        	console.log("i'm in redis");
-        	let final = JSON.parse(redis_data);
-            res.end(final);
-        } else {
-        	_query_data();
-        }
-    }).catch(() => {
-    	_query_data();
+    http_redis.request_billboard_data_save();
+    let myBillBoard = {};
+    REDIS.getStringByKey("popular_list_name").then(function(name_data) {
+        myBillBoard.billboard = name_data;
+        REDIS.getBillBoardFromRedis(("type_" + type), (offset / 20)).then((redis_data) => {
+            if (redis_data) {
+                console.log("i'm in redis");
+                myBillBoard.song_list = redis_data;
+                let final = JSON.parse(myBillBoard);
+                res.end(final);
+            } else {
+                _query_data(type);
+            }
+        }).catch(() => {
+            _query_data(type);
+        });
     });
     function _query_data() {
-    	console.log("i'm in network");
+        console.log("i'm in network");
         QUERY_UTIL.NET_getBillBoardByType(type, offset, limit).then((data) => {
             res.end(data);
-            REDIS.saveBillBoardToRedis(("type_"+type),JSON.stringify(data));
+            http_redis.request_billboard_data_save(type)
         }).catch((error) => {
             res.end("error");
         });
-    }
-});
-
+    }   
+});         
+        
 module.exports = router;
