@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+	let obj = {
+		test:()=>{
+			console.log(this);
+		},
+		temp:function(){
+			setTimeout(()=>{
+				console.log(this)
+			},0);
+		}
+	}
+	obj.test();
+	obj.temp();
+	</script>
+</body>
+</html>
