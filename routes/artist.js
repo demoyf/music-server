@@ -5,6 +5,7 @@ const QUERY_UTIL = require('./../lib/net/get_data');
 /* GET home page. */
 const _query_db = require('./../lib/db/query_db');
 const _redis = require('./../lib/redis/redis_util');
+let http_redis = require('./../lib/redis/http_redis');
 router.get('/', function(req, res, next) {
     let id = req.query.tinguid;
     if (!id) {
@@ -26,7 +27,7 @@ router.get('/', function(req, res, next) {
         }
     });
 });
-router.get('/hot_list', function(req, res, next) {
+router.get('/', function(req, res, next) {
 	let page = req.query.page||0;
 	res.type("text/javascript");
     _redis.get_hot_artist(page).then((redis_result => {
@@ -37,8 +38,10 @@ router.get('/hot_list', function(req, res, next) {
             	res.end(hot_result);
             	_redis.save
             });
+            http_redis.request_hot_artist();
         }
     }));
+
 });
 
 module.exports = router;
