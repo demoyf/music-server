@@ -10,7 +10,7 @@ router.get("/", function(req, res, next) {
     let limit = req.query.size || 20;
     res.type("text/javascript");
     let myBillBoard = {};
-    let key_and_type = _key_type["type"+type];
+    let key_and_type = _key_type["type_"+type];
     REDIS.getStringByKey(key_and_type.name).then(function(name_data) {
         myBillBoard.billboard = JSON.parse(name_data);
         REDIS.getBillBoardFromRedis(key_and_type.key, (offset / 20)).then((redis_data) => {
@@ -31,11 +31,11 @@ router.get("/", function(req, res, next) {
         });
     });
 
-    function _query_data() {
+    function _query_data(type) {
         console.log("i'm in network");
         QUERY_UTIL.NET_getBillBoardByType(type, offset, limit).then((data) => {
             res.end(data);
-            http_redis.request_billboard_data_save();
+            http_redis.request_billboard_data_save(type);
             return;
         }).catch((error) => {
             res.end(error);
