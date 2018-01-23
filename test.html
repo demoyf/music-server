@@ -18,6 +18,14 @@
 	}
 	obj.test();
 	obj.temp();
+	let temp = {
+		a:1
+	}
+	function demo(a){
+		a = 2;
+	}
+	demo(temp.a);
+	console.log(temp.a);
 	</script>
 </body>
 </html>
