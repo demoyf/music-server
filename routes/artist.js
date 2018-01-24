@@ -7,48 +7,37 @@ const _query_db = require('./../lib/db/query_db');
 const _redis = require('./../lib/redis/redis_util');
 let http_redis = require('./../lib/redis/http_redis');
 let _page_and_param = require('./../lib/redis/page_and_param');
+let _local_get = require('./../lib/db/local_get');
 router.get('/', function(req, res, next) {
-    let id = req.query.tinguid;
-    if (!id) {
-        id = 1052;
-    }
-    let result = _query_db.DB_getAritstByTingUID(id);
-    res.type("text/javascript");
-    result.then(function(data) {
-        if (data) {
-            console.log("read in db");
-            res.json(data);
-        } else {
-            let temp = QUERY_UTIL.NET_getAritstByTingUID(id);
-            temp.then(function(data) {
-                res.setHeader('charset', "utf-8");
-                res.end(data);
-                _query_db.sloveArtistAndInsert(data);
-            });
-        }
+    _local_get.get_list(2000).then((result) => {
+        let artists = JSON.parse(result).artist;
+        console.log(artists.length);
+        res.end(result);
+        artists.forEach((item) => {
+            _local_get.get_artist_by_id(item.ting_uid, item.artist_id);
+        });
     });
 });
 router.get('/hot_artist', function(req, res, next) {
-	let page = req.query.page||0;
-	res.type("text/javascript");
+    let page = req.query.page || 0;
+    res.type("text/javascript");
     let param = _page_and_param.hot_artist;
     // http_redis.request_hot_artist();
     // res.end("123");
-    _redis.get_form_list(param.key,1).then((redis_result => {
+    _redis.get_form_list(param.key, 1).then((redis_result => {
         if (redis_result) {
             console.log("hot artist in redis");
-        	res.end(redis_result);
+            res.end(redis_result);
             return;
         } else {
             console.log("hot artist in network");
             QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
-            	res.end(hot_result);
+                res.end(hot_result);
             });
             http_redis.request_hot_artist();
             return;
         }
     }));
-
 });
 
 module.exports = router;
