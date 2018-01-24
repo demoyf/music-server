@@ -32,7 +32,9 @@ router.get('/hot_artist', function(req, res, next) {
 	let page = req.query.page||0;
 	res.type("text/javascript");
     let param = _page_and_param.hot_artist;
-    _redis.get_form_list(param.key,page).then((redis_result => {
+    // http_redis.request_hot_artist();
+    // res.end("123");
+    _redis.get_form_list(param.key,1).then((redis_result => {
         if (redis_result) {
             console.log("hot artist in redis");
         	res.end(redis_result);
@@ -41,7 +43,6 @@ router.get('/hot_artist', function(req, res, next) {
             console.log("hot artist in network");
             QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
             	res.end(hot_result);
-            	_redis.save
             });
             http_redis.request_hot_artist();
             return;
