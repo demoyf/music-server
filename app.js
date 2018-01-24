@@ -9,6 +9,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var billboard = require('./routes/billboard');
 var artist = require('./routes/artist');
+var song_routes = require('./routes/song');
 var app = express();
 
 // view engine setup
@@ -27,6 +28,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/billboard',billboard);
 app.use('/artist',artist);
+app.use('/song',song_routes);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
