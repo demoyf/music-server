@@ -8,7 +8,7 @@ const _redis = require('./../lib/redis/redis_util');
 let http_redis = require('./../lib/redis/http_redis');
 let _page_and_param = require('./../lib/redis/page_and_param');
 let _local_get = require('./../lib/db/local_get');
-router.get('/', function(req, res, next) {
+/*router.get('/', function(req, res, next) {
     _local_get.get_list(2000).then((result) => {
         let artists = JSON.parse(result).artist;
         console.log(artists.length);
@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
             _local_get.get_artist_by_id(item.ting_uid, item.artist_id);
         });
     });
-});
+});*/
 router.get('/hot_artist', function(req, res, next) {
     let page = req.query.page || 0;
     res.type("text/javascript");
