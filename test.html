@@ -1,31 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Document</title>
+    <meta charset="UTF-8">
+    <title>Document</title>
 </head>
+
 <body>
-	<script type="text/javascript">
-	let obj = {
-		test:()=>{
-			console.log(this);
-		},
-		temp:function(){
-			setTimeout(()=>{
-				console.log(this)
-			},0);
-		}
-	}
-	obj.test();
-	obj.temp();
-	let temp = {
-		a:1
-	}
-	function demo(a){
-		a = 2;
-	}
-	demo(temp.a);
-	console.log(temp.a);
-	</script>
+    <script type="text/javascript">
+    /*	let obj = {
+                    		test:()=>{
+                    			console.log(this);
+                    		},
+                    		temp:function(){
+                    			setTimeout(()=>{
+                    				console.log(this)
+                    			},0);
+                    		}
+                    	}
+                    	obj.test();
+                    	obj.temp();
+                    	let temp = {
+                    		a:1
+                    	}
+                    	function demo(a){
+                    		a = 2;
+                    	}
+                    	demo(temp.a);
+                    	console.log(temp.a);*/
+    /*	Function.prototype.bind = function(){
+		
+    	}
+    	function foo(bar){
+		
+    	}*/
+    // slice没参数的时候，是直接拷贝原数组
+    /*	let list = [1,2,3,0];
+    	let temp = [].slice.call(list);
+    	console.log(temp);*/
+    var self = null;
+    Function.prototype.bind = function() {
+        // 获取到要复制的对象
+        var self = this.self || this;
+        var context = [].shift.call(arguments);
+        // 获取后面的参数
+        var args = [].slice.apply(arguments);
+        var res = function() {
+            return self.apply(context, [].concat.call(args, [].slice.call(arguments)));;
+        };
+        res.self = this;
+        return res;
+    }
+    // bind改变this的指向，将far的this指向了传递进去的对象，所以才会有this.bar = "bar1";
+    function far(a, b, c) {
+        return a + "," + b + "," + c + "," + this.bar;
+    }
+    var foo = far.bind({ bar: "bar1" });
+    foo = foo.bind({ bar: "bar2" }, 3, 4);
+    console.log(foo(5));
+    </script>
 </body>
+
 </html>
