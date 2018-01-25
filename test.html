@@ -9,25 +9,25 @@
 <body>
     <script type="text/javascript">
     /*	let obj = {
-                    		test:()=>{
-                    			console.log(this);
-                    		},
-                    		temp:function(){
-                    			setTimeout(()=>{
-                    				console.log(this)
-                    			},0);
-                    		}
-                    	}
-                    	obj.test();
-                    	obj.temp();
-                    	let temp = {
-                    		a:1
-                    	}
-                    	function demo(a){
-                    		a = 2;
-                    	}
-                    	demo(temp.a);
-                    	console.log(temp.a);*/
+                                    		test:()=>{
+                                    			console.log(this);
+                                    		},
+                                    		temp:function(){
+                                    			setTimeout(()=>{
+                                    				console.log(this)
+                                    			},0);
+                                    		}
+                                    	}
+                                    	obj.test();
+                                    	obj.temp();
+                                    	let temp = {
+                                    		a:1
+                                    	}
+                                    	function demo(a){
+                                    		a = 2;
+                                    	}
+                                    	demo(temp.a);
+                                    	console.log(temp.a);*/
     /*	Function.prototype.bind = function(){
 		
     	}
@@ -38,7 +38,9 @@
     /*	let list = [1,2,3,0];
     	let temp = [].slice.call(list);
     	console.log(temp);*/
-    var self = null;
+    // 首先要求的是保留最开始的函数，所以需要有个self来保存对far函数的引用。
+    // 后续的话，始终使用这个self的apply来实现this指向的改变，
+    // 最终调用foo时候的参数需要跟bind的参数结合，所以需要用concat将二者合并
     Function.prototype.bind = function() {
         // 获取到要复制的对象
         var self = this.self || this;
@@ -46,18 +48,24 @@
         // 获取后面的参数
         var args = [].slice.apply(arguments);
         var res = function() {
-            return self.apply(context, [].concat.call(args, [].slice.call(arguments)));;
+            return self.apply(context, [].concat.call(self.list,[].slice.call(arguments)));
         };
-        res.self = this;
+        if (self.list) {
+            self.list = [].concat.call(self.list, args);
+        } else {
+            self.list = args;
+        }
+        res.self = self;
         return res;
     }
     // bind改变this的指向，将far的this指向了传递进去的对象，所以才会有this.bar = "bar1";
     function far(a, b, c) {
         return a + "," + b + "," + c + "," + this.bar;
     }
-    var foo = far.bind({ bar: "bar1" });
-    foo = foo.bind({ bar: "bar2" }, 3, 4);
-    console.log(foo(5));
+    var foo = far.bind({ bar: "bar1" }, 5);
+    foo = foo.bind({ bar: "bar2" },3);
+    foo = foo.bind({ bar: "bar3" },4);
+    console.log(foo());
     </script>
 </body>
 
