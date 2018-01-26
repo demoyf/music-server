@@ -4,40 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <style type="text/css">
+    body {}
+    .temp{
+        color: red;
+        width: 15em;
+    }
+    .temp hr{
+        background-color: currentColor;
+    }
+    </style>
 </head>
 
 <body>
+    <div class="temp">
+    123456
+        <hr/>
+    </div>
     <script type="text/javascript">
-    /*	let obj = {
-                                    		test:()=>{
-                                    			console.log(this);
-                                    		},
-                                    		temp:function(){
-                                    			setTimeout(()=>{
-                                    				console.log(this)
-                                    			},0);
-                                    		}
-                                    	}
-                                    	obj.test();
-                                    	obj.temp();
-                                    	let temp = {
-                                    		a:1
-                                    	}
-                                    	function demo(a){
-                                    		a = 2;
-                                    	}
-                                    	demo(temp.a);
-                                    	console.log(temp.a);*/
-    /*	Function.prototype.bind = function(){
-		
-    	}
-    	function foo(bar){
-		
-    	}*/
+    /*  let obj = {
+                    test:()=>{
+                        console.log(this);
+                    },
+                    temp:function(){
+                        setTimeout(()=>{
+                            console.log(this)
+                        },0);
+                    }
+                }
+                obj.test();
+                obj.temp();
+                let temp = {
+                    a:1
+                }
+                function demo(a){
+                    a = 2;
+                }
+                demo(temp.a);
+                console.log(temp.a);*/
+    /*  Function.prototype.bind = function(){
+        
+        }
+        function foo(bar){
+        
+        }*/
     // slice没参数的时候，是直接拷贝原数组
-    /*	let list = [1,2,3,0];
-    	let temp = [].slice.call(list);
-    	console.log(temp);*/
+    /*  let list = [1,2,3,0];
+        let temp = [].slice.call(list);
+        console.log(temp);*/
     // 首先要求的是保留最开始的函数，所以需要有个self来保存对far函数的引用。
     // 后续的话，始终使用这个self的apply来实现this指向的改变，
     // 最终调用foo时候的参数需要跟bind的参数结合，所以需要用concat将二者合并
@@ -48,7 +62,7 @@
         // 获取后面的参数
         var args = [].slice.apply(arguments);
         var res = function() {
-            return self.apply(context, [].concat.call(self.list,[].slice.call(arguments)));
+            return self.apply(context, [].concat.call(self.list, [].slice.call(arguments)));
         };
         if (self.list) {
             self.list = [].concat.call(self.list, args);
@@ -63,8 +77,8 @@
         return a + "," + b + "," + c + "," + this.bar;
     }
     var foo = far.bind({ bar: "bar1" }, 5);
-    foo = foo.bind({ bar: "bar2" },3);
-    foo = foo.bind({ bar: "bar3" },4);
+    foo = foo.bind({ bar: "bar2" }, 3);
+    foo = foo.bind({ bar: "bar3" }, 4);
     console.log(foo());
     </script>
 </body>
