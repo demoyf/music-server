@@ -42,7 +42,7 @@ router.get('/hot_artist', function(req, res, next) {
                         http_redis.request_hot_artist();
                         return;
                     }
-                }));
+                });
         } else {
             console.log("hot artist in network");
             QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
