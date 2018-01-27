@@ -16,20 +16,19 @@ router.get('/all/:query/:type', function(req, res, next) {
     let query = req.params.query;
     let type = req.params.type;
     res.type('text/json');
-    _redis.getStringByKey(query.toString()+"_"+type).then((redis_result) => {
+    _redis.getStringByKey(query.toString() + "_" + type).then((redis_result) => {
         if (redis_result) {
-        	console.log("search in redis");
+            console.log("search in redis");
             res.end(JSON.parse(redis_result));
             return;
         } else {
             let url = _music_url.QUERY_SEARCH_ALL_URL + "query=" + query + "&type=" + type;
             _http.net_request(url).then((search_result) => {
-            	console.log('search in net');
+                console.log('search in net');
                 res.end(search_result);
-                _redis.saveStringByKey(query.toString()+"_"+type, JSON.stringify(search_result), 10);
+                _redis.saveStringByKey(query.toString() + "_" + type, JSON.stringify(search_result), 10);
             });
         }
-    })
-
+    });
 });
 module.exports = router;

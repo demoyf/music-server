@@ -26,23 +26,23 @@ router.get('/hot_artist', function(req, res, next) {
     // res.end("123");
     let artist_obj = {};
     _redis.getStringByKey(param.redis_name).then((name_result) => {
-        if (name_result) {
-            artist_obj.name = JSON.parse(name_result);
-            _redis.get_form_list(param.key, 1).then((redis_result => {
-                if (redis_result) {
-                    console.log("hot artist in redis");
-                    artist_obj.artist = JSON.parse(redis_result);
-                    res.end(JSON.stringify(artist_obj));
-                    return;
-                } else {
-                    console.log("hot artist in network");
-                    QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
-                        res.end(hot_result);
-                    });
-                    http_redis.request_hot_artist();
-                    return;
-                }
-            }));
+            if (name_result) {
+                artist_obj.name = JSON.parse(name_result);
+                _redis.get_form_list(param.key, 1).then((redis_result) => {
+                    if (redis_result) {
+                        console.log("hot artist in redis");
+                        artist_obj.artist = JSON.parse(redis_result);
+                        res.end(JSON.stringify(artist_obj));
+                        return;
+                    } else {
+                        console.log("hot artist in network");
+                        QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
+                            res.end(hot_result);
+                        });
+                        http_redis.request_hot_artist();
+                        return;
+                    }
+                }));
         } else {
             console.log("hot artist in network");
             QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
@@ -54,7 +54,7 @@ router.get('/hot_artist', function(req, res, next) {
     });
 });
 
-router.get('/get_artist/:ting',function(req,res,next){
+router.get('/get_artist/:ting', function(req, res, next) {
     console.log(req.params.ting);
     res.end("123");
 });

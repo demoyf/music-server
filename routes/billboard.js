@@ -10,7 +10,7 @@ router.get("/", function(req, res, next) {
     let limit = req.query.size || 20;
     res.type("text/javascript");
     let myBillBoard = {};
-    let key_and_type = _key_type["type_"+type];
+    let key_and_type = _key_type["type_" + type];
     REDIS.getStringByKey(key_and_type.name).then(function(name_data) {
         myBillBoard.billboard = JSON.parse(name_data);
         REDIS.getBillBoardFromRedis(key_and_type.key, (offset / 20)).then((redis_data) => {
