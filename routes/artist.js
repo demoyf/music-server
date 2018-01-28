@@ -3,11 +3,12 @@ var router = express.Router();
 const QUERY_UTIL = require('./../lib/net/get_data');
 // const SLOVE_DATA = require('./../lib/slove/slove_data');
 /* GET home page. */
-const _query_db = require('./../lib/db/query_db');
+const _query_db = require('./../lib/db/mydb');
 const _redis = require('./../lib/redis/redis_util');
 let http_redis = require('./../lib/redis/http_redis');
 let _page_and_param = require('./../lib/redis/page_and_param');
 let _local_get = require('./../lib/db/local_get');
+let _music_url = require('./../lib/net/music_url');
 /*router.get('/', function(req, res, next) {
     _local_get.get_list(2000).then((result) => {
         let artists = JSON.parse(result).artist;
@@ -20,29 +21,29 @@ let _local_get = require('./../lib/db/local_get');
 });*/
 router.get('/hot_artist', function(req, res, next) {
     let page = req.query.page || 0;
-    res.type("text/javascript");
+    res.type("text/json");
     let param = _page_and_param.hot_artist;
     // http_redis.request_hot_artist();
     // res.end("123");
     let artist_obj = {};
     _redis.getStringByKey(param.redis_name).then((name_result) => {
-            if (name_result) {
-                artist_obj.name = JSON.parse(name_result);
-                _redis.get_form_list(param.key, 1).then((redis_result) => {
-                    if (redis_result) {
-                        console.log("hot artist in redis");
-                        artist_obj.artist = JSON.parse(redis_result);
-                        res.end(JSON.stringify(artist_obj));
-                        return;
-                    } else {
-                        console.log("hot artist in network");
-                        QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
-                            res.end(hot_result);
-                        });
-                        http_redis.request_hot_artist();
-                        return;
-                    }
-                });
+        if (name_result) {
+            artist_obj.name = JSON.parse(name_result);
+            _redis.get_form_list(param.key, 1).then((redis_result) => {
+                if (redis_result) {
+                    console.log("hot artist in redis");
+                    artist_obj.artist = JSON.parse(redis_result);
+                    res.end(JSON.stringify(artist_obj));
+                    return;
+                } else {
+                    console.log("hot artist in network");
+                    QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
+                        res.end(hot_result);
+                    });
+                    http_redis.request_hot_artist();
+                    return;
+                }
+            });
         } else {
             console.log("hot artist in network");
             QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
@@ -54,8 +55,37 @@ router.get('/hot_artist', function(req, res, next) {
     });
 });
 
-router.get('/get_artist/:ting', function(req, res, next) {
-    console.log(req.params.ting);
-    res.end("123");
+router.get('/get_artist/:ting/:artist', function(req, res, next) {
+    let ting_uid = req.params.ting;
+    let artist_id = req.params.artist;
+    let key = _page_and_param.artist_db;
+    let query = key.query;
+    query.ting_uid = ting_uid;
+    query.artist_id = artist_id;
+    res.type("text/json");
+    _query_db.queryData(key.collection, query).then((db_data) => {
+        if (db_data) {
+            console.log("artist in db");
+            res.end(JSON.stringify(db_data));
+            return;
+        } else {
+            let url = _music_url.QUERY_ARTISTS_INFO + "tinguid=" + ting_uid + "&artistid=" + artist_id;
+            console.log(url);
+            QUERY_UTIL.net_request(url, false).then((data) => {
+                console.log("artist in net");
+                if (data) {
+                    res.end(data);
+                    let temp = JSON.parse(data);
+                    temp._id = temp.ting_uid;
+                    _query_db.insertData(key.collection, temp);
+                } else {
+                    res.end("error");
+                }
+            }).catch((error) => {
+                console.log("error");
+                res.end(JSON.stringify(error));
+            });
+        }
+    });
 });
 module.exports = router;
