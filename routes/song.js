@@ -46,7 +46,7 @@ router.get('/get_song/:song_id', function(req, res, next) {
     res.type("text/json");
     _my_db.queryData(key.collection, { _id: song_id }).then((data) => {
         if (data) {
-            console.log("song in db")
+            console.log("song in db");
             res.end(JSON.stringify(data));
         } else {
             QUERY_UTIL.net_get_song(song_id).then((song_data) => {

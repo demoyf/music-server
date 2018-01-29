@@ -7,6 +7,7 @@ const _query_db = require('./../lib/db/mydb');
 const _redis = require('./../lib/redis/redis_util');
 let http_redis = require('./../lib/redis/http_redis');
 let _page_and_param = require('./../lib/redis/page_and_param');
+let _db_key = require('./../lib/db/db_key');
 let _local_get = require('./../lib/db/local_get');
 let _music_url = require('./../lib/net/music_url');
 /*router.get('/', function(req, res, next) {
@@ -58,7 +59,7 @@ router.get('/hot_artist', function(req, res, next) {
 router.get('/get_artist/:ting/:artist', function(req, res, next) {
     let ting_uid = req.params.ting;
     let artist_id = req.params.artist;
-    let key = _page_and_param.artist_db;
+    let key = _db_key.artist_db;
     let query = key.query;
     query.ting_uid = ting_uid;
     query.artist_id = artist_id;
