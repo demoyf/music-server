@@ -7,6 +7,7 @@ let http_redis = require('./../lib/redis/http_redis'); // 请求完整数据并�
 let _page_and_param = require('./../lib/redis/page_and_param'); // 获取配置参数
 let _db_key = require('./../lib/db/db_key');
 let _my_db = require('./../lib/db/mydb');
+// 新歌速递
 router.get('/new_song', function(req, res, next) {
     let param = _page_and_param.new_song;
     let page = req.query.page || 0;
@@ -40,6 +41,7 @@ router.get('/new_song', function(req, res, next) {
         }
     });
 });
+// id获取歌曲
 router.get('/get_song/:song_id', function(req, res, next) {
     let song_id = req.params.song_id;
     let key = _db_key.song;
