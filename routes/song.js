@@ -7,6 +7,7 @@ let http_redis = require('./../lib/redis/http_redis'); // 请求完整数据并�
 let _page_and_param = require('./../lib/redis/page_and_param'); // 获取配置参数
 let _db_key = require('./../lib/db/db_key');
 let _my_db = require('./../lib/db/mydb');
+let _music_url = require('./../lib/net/music_url');
 // 新歌速递
 router.get('/new_song/:page', function(req, res, next) {
     let param = _page_and_param.new_song;
@@ -77,5 +78,57 @@ router.get('/get_song/:song_id', function(req, res, next) {
             });
         }
     });
+});
+// tinguid,artistid
+router.get('/song_list/:tinguid/:artistid/:page', function(req, res, next) {
+    let tinguid = req.params.tinguid;
+    let artistid = req.params.artistid;
+    let page = req.params.page;
+    let search_key = tinguid + "_" + artistid;
+    let name_search_key = tinguid + "_" + artistid + "_name";
+    let offset = (page - 1) * 20;
+    let limit = 20;
+    res.type("text/json");
+    let obj = {};
+    _redis.getStringByKey(name_search_key).then((name_result) => {
+        if (name_result) {
+            obj.page_info = JSON.parse(name_result);
+            _redis.get_form_list(search_key, page - 1).then((song_result) => {
+                console.log("song list in redis");
+                if (song_result) {
+                    obj.songlist = JSON.parse(song_result);
+                    res.end(JSON.stringify(obj));
+                } else {
+                    get_net_data();
+                }
+            });
+        } else {
+            get_net_data();
+        }
+    });
+
+    function get_net_data() {
+        console.log("song list in net");
+        let temp_url = _music_url.QUERY_SONG_LIST_BY_TING_UID + "tinguid=" +
+            tinguid + "&artistid=" + artistid;
+        let url = temp_url + "&offset=" + offset + "&limits=" + limit;
+        QUERY_UTIL.net_request(url, false).then((song_list_data) => {
+            let temp = JSON.parse(song_list_data);
+            let length = temp.songnums > 100 ? 100 : temp.songnums;
+            let page = (length % 20 == 0 ? (length / 20) : Math.floor(length / 20) + 1);
+            temp.page_info = {
+                page_num: page
+            }
+            res.end(JSON.stringify(temp));
+            let artist_album_redis = {
+                key: search_key,
+                data_key_in_json: "songlist",
+                page_num: 20,
+                redis_name: name_search_key,
+                name: "歌手歌曲列表"
+            }
+            http_redis.requset_artist_song_list(temp_url, artist_album_redis);
+        });
+    }
 });
 module.exports = router;
