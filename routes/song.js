@@ -8,9 +8,9 @@ let _page_and_param = require('./../lib/redis/page_and_param'); // 获取配置�
 let _db_key = require('./../lib/db/db_key');
 let _my_db = require('./../lib/db/mydb');
 // 新歌速递
-router.get('/new_song', function(req, res, next) {
+router.get('/new_song/:page', function(req, res, next) {
     let param = _page_and_param.new_song;
-    let page = req.query.page || 0;
+    let page = req.params.page || 0;
     let result_obj = {};
     res.type("text/javascript");
     _redis.getStringByKey(param.redis_name).then((name_result) => {
@@ -25,7 +25,13 @@ router.get('/new_song', function(req, res, next) {
                 } else {
                     QUERY_UTIL.NET_getNewSong().then((net_song) => {
                         console.log('new song in net');
-                        res.end(net_song);
+                        let temp = JSON.parse(net_song);
+                        let length = temp.song_list.length;
+                        temp.name = {
+                            page_num: length % 20 == 0 ? length / 20 : Math.floor(length / 20) + 1,
+                            name: "新歌速递"
+                        }
+                        res.end(JSON.stringify(temp));
                         http_redis.request_new_song();
                         return;
                     });
@@ -35,7 +41,13 @@ router.get('/new_song', function(req, res, next) {
         } else {
             QUERY_UTIL.NET_getNewSong().then((net_song) => {
                 console.log('new song in net');
-                res.end(net_song);
+                let temp = JSON.parse(net_song);
+                let length = temp.song_list.length;
+                temp.name = {
+                    page_num: length % 20 == 0 ? length / 20 : Math.floor(length / 20) + 1,
+                    name: "新歌速递"
+                }
+                res.end(JSON.stringify(temp));
                 http_redis.request_new_song();
             });
         }
@@ -54,7 +66,7 @@ router.get('/get_song/:song_id', function(req, res, next) {
             QUERY_UTIL.net_get_song(song_id).then((song_data) => {
                 if (song_data) {
                     console.log("song in net");
-                    res.end(JSON.stringify(song_data));
+                    res.end(song_data);
                     let temp = JSON.parse(song_data);
                     temp._id = temp.songinfo.song_id;
                     _my_db.insertData(key.collection, temp);
