@@ -13,46 +13,39 @@ router.get('/new_song/:page', function(req, res, next) {
     let param = _page_and_param.new_song;
     let page = req.params.page || 0;
     let result_obj = {};
-    res.type("text/javascript");
+    res.type("text/json");
     _redis.getStringByKey(param.redis_name).then((name_result) => {
         if (name_result) {
             result_obj.name = JSON.parse(name_result);
-            _redis.get_form_list(param.key, page).then((song_result) => {
+            _redis.get_form_list(param.key, (page - 1)).then((song_result) => {
                 if (song_result) {
-                    result_obj.song_list = JSON.parse(song_result);
                     console.log('new song in redis');
+                    result_obj.song_list = JSON.parse(song_result);
                     res.end(JSON.stringify(result_obj));
                     return;
                 } else {
-                    QUERY_UTIL.NET_getNewSong().then((net_song) => {
-                        console.log('new song in net');
-                        let temp = JSON.parse(net_song);
-                        let length = temp.song_list.length;
-                        temp.name = {
-                            page_num: length % 20 == 0 ? length / 20 : Math.floor(length / 20) + 1,
-                            name: "新歌速递"
-                        }
-                        res.end(JSON.stringify(temp));
-                        http_redis.request_new_song();
-                        return;
-                    });
+                    get_data();
                 }
             });
             return;
         } else {
-            QUERY_UTIL.NET_getNewSong().then((net_song) => {
-                console.log('new song in net');
-                let temp = JSON.parse(net_song);
-                let length = temp.song_list.length;
-                temp.name = {
-                    page_num: length % 20 == 0 ? length / 20 : Math.floor(length / 20) + 1,
-                    name: "新歌速递"
-                }
-                res.end(JSON.stringify(temp));
-                http_redis.request_new_song();
-            });
+            get_data();
         }
     });
+
+    function get_data() {
+        QUERY_UTIL.NET_getNewSong().then((net_song) => {
+            console.log('new song in net');
+            let temp = JSON.parse(net_song);
+            let length = temp.song_list.length;
+            temp.name = {
+                page_num: length % 20 == 0 ? length / 20 : Math.floor(length / 20) + 1,
+                name: "新歌速递"
+            }
+            res.end(JSON.stringify(temp));
+            http_redis.request_new_song();
+        });
+    }
 });
 // id获取歌曲
 router.get('/get_song/:song_id', function(req, res, next) {

@@ -32,6 +32,7 @@ router.get('/artist_album/:ting_uid/:page', (req, res, next) => {
     param.key = param.key + ting_uid;
     param.redis_name = param.redis_name + ting_uid;
     let obj = {};
+    res.type("text/json");
     _redis.getStringByKey(param.redis_name).then((redis_name_data) => {
         if (redis_name_data) {
             console.log("artist album in redis");

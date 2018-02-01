@@ -10,7 +10,7 @@ router.get("/:type/:page", function(req, res, next) {
     let type = req.params.type;
     let limit = 20;
     let offset = (page - 1) * limit || 0;
-    res.type("text/javascript");
+    res.type("text/json");
     let myBillBoard = {};
     let key_and_type = _key_type["type_" + type];
     REDIS.getStringByKey(key_and_type.name).then(function(name_data) {
