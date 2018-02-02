@@ -26,29 +26,46 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// all 设置一些共用的属性，例如返回的数据类型，跨域的一些头
+app.all('*', function(req, res, next) {
+	// 返回结果为json
+    res.type("text/json");
+    // 允许访问的域名
+    res.header("Access-Control-Allow-Origin", "*");
+    //  允许发送凭据
+    res.header("Access-Control-Allow-Credentials",true);
+    // 允许接收的请求头
+    res.header("Access-dControl-Allow-Headers", "Content-Type,Content-Length,Authorization,X-Powered-By,X-Requested-With");
+    // 请求方法
+    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By", '3.2.1');
+    // 内容类型
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+});
 app.use('/', index);
 app.use('/users', users);
-app.use('/billboard',billboard);
-app.use('/artist',artist);
-app.use('/song',song_routes);
-app.use('/search',search_routes);
-app.use('/album',album_routes);
+app.use('/billboard', billboard);
+app.use('/artist', artist);
+app.use('/song', song_routes);
+app.use('/search', search_routes);
+app.use('/album', album_routes);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;
