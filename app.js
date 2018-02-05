@@ -31,7 +31,7 @@ app.all('*', function(req, res, next) {
 	// 返回结果为json
     res.type("text/json");
     // 允许访问的域名
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "http://127.0.0.1");
     //  允许发送凭据
     res.header("Access-Control-Allow-Credentials",true);
     // 允许接收的请求头
