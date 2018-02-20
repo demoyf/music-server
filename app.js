@@ -31,7 +31,7 @@ app.all('*', function(req, res, next) {
 	// 返回结果为json
     res.type("text/json");
     // 允许访问的域名
-    res.header("Access-Control-Allow-Origin", "http://127.0.0.1");
+    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
     //  允许发送凭据
     res.header("Access-Control-Allow-Credentials",true);
     // 允许接收的请求头
@@ -41,6 +41,9 @@ app.all('*', function(req, res, next) {
     res.header("X-Powered-By", '3.2.1');
     // 内容类型
     res.header("Content-Type", "application/json;charset=utf-8");
+    /*req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||*/
     next();
 });
 app.use('/', index);
