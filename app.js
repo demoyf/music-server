@@ -1,4 +1,4 @@
-var express = require('express');
+﻿var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -31,7 +31,7 @@ app.all('*', function(req, res, next) {
 	// 返回结果为json
     res.type("text/json");
     // 允许访问的域名
-    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+    res.header("Access-Control-Allow-Origin", "*");
     //  允许发送凭据
     res.header("Access-Control-Allow-Credentials",true);
     // 允许接收的请求头
@@ -46,6 +46,7 @@ app.all('*', function(req, res, next) {
     req.socket.remoteAddress ||*/
     next();
 });
+
 app.use('/', index);
 app.use('/users', users);
 app.use('/billboard', billboard);

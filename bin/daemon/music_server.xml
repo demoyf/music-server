@@ -1,0 +1,25 @@
+<service>
+	<id>music_server.exe</id>
+	<name>music_server</name>
+	<description>音乐后台</description>
+	<executable>C:\Nodejs\node.exe</executable>
+	<logmode>rotate</logmode>
+	<argument>--harmony</argument>
+	<argument>D:\VSProject\QQMusicBack\node_modules\_node-windows@0.1.14@node-windows\lib\wrapper.js</argument>
+	<argument>--file</argument>
+	<argument>D:\VSProject\QQMusicBack\bin\www</argument>
+	<argument>--log</argument>
+	<argument>music_server wrapper</argument>
+	<argument>--grow</argument>
+	<argument>0.25</argument>
+	<argument>--wait</argument>
+	<argument>1</argument>
+	<argument>--maxrestarts</argument>
+	<argument>3</argument>
+	<argument>--abortonerror</argument>
+	<argument>n</argument>
+	<argument>--stopparentfirst</argument>
+	<argument>undefined</argument>
+	<stoptimeout>30sec</stoptimeout>
+	<workingdirectory>D:\VSProject\QQMusicBack</workingdirectory>
+</service>

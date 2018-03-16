@@ -30,30 +30,35 @@ router.get('/hot_artist', function(req, res, next) {
     _redis.getStringByKey(param.redis_name).then((name_result) => {
         if (name_result) {
             artist_obj.name = JSON.parse(name_result);
-            _redis.get_form_list(param.key, 1).then((redis_result) => {
+            _redis.get_form_list(param.key, page).then((redis_result) => {
                 if (redis_result) {
-                    console.log("hot artist in redis");
                     artist_obj.artist = JSON.parse(redis_result);
                     res.end(JSON.stringify(artist_obj));
                     return;
                 } else {
-                    console.log("hot artist in network");
-                    QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
-                        res.end(hot_result);
-                    });
-                    http_redis.request_hot_artist();
-                    return;
+                    my_get_data();
                 }
             });
         } else {
-            console.log("hot artist in network");
-            QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
-                res.end(hot_result);
-            });
-            http_redis.request_hot_artist();
-            return;
+            my_get_data();
         }
     });
+    function my_get_data(){
+      QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
+          let data = JSON.parse(hot_result);
+          let name = {
+            name:"热门歌手",
+            page_num:data.artist.length%20==0?data.artist.length/20:Math.floor(data.artist.length/20)+1
+          }
+          let obj = {
+            artist:hot_result.slice(0,20),
+            name:name
+          }
+          res.end(JSON.stringify(obj));
+      });
+      http_redis.request_hot_artist();
+      return;
+    }
 });
 
 router.get('/get_artist/:ting/:artist', function(req, res, next) {

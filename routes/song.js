@@ -34,6 +34,7 @@ router.get('/new_song/:page', function(req, res, next) {
     });
 
     function get_data() {
+      console.log("get data error");
         QUERY_UTIL.NET_getNewSong().then((net_song) => {
             console.log('new song in net');
             let temp = JSON.parse(net_song);
