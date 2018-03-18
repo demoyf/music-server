@@ -45,13 +45,13 @@ router.get('/hot_artist', function(req, res, next) {
     });
     function my_get_data(){
       QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
-          let data = JSON.parse(hot_result);
+          let data = JSON.parse(hot_result).artist;
           let name = {
             name:"热门歌手",
             page_num:data.artist.length%20==0?data.artist.length/20:Math.floor(data.artist.length/20)+1
           }
           let obj = {
-            artist:hot_result.slice(0,20),
+            artist:data.slice(0,20),
             name:name
           }
           res.end(JSON.stringify(obj));
