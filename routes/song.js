@@ -8,6 +8,9 @@ let _page_and_param = require('./../lib/redis/page_and_param'); // 获取配置�
 let _db_key = require('./../lib/db/db_key');
 let _my_db = require('./../lib/db/mydb');
 let _music_url = require('./../lib/net/music_url');
+const path = require('path');
+const fs = require('fs');
+const _REQUEST = require('request');
 // 新歌速递
 router.get('/new_song/:page', function(req, res, next) {
     let param = _page_and_param.new_song;
@@ -55,21 +58,25 @@ router.get('/get_song/:song_id', function(req, res, next) {
     res.type("text/json");
     _my_db.queryData(key.collection, { _id: song_id }).then((data) => {
         if (data) {
-            console.log("song in db");
             res.end(JSON.stringify(data));
         } else {
-            QUERY_UTIL.net_get_song(song_id).then((song_data) => {
-                if (song_data) {
-                    console.log("song in net");
-                    res.end(song_data);
-                    let temp = JSON.parse(song_data);
-                    temp._id = temp.songinfo.song_id;
+          QUERY_UTIL.net_get_song(song_id).then((song_data) => {
+              if (song_data) {
+                  let temp = JSON.parse(song_data);
+                  temp._id = temp.songinfo.song_id;
+                  var filePath = path.join(__dirname, './../music/')+song_id+".mp3";
+                  _REQUEST(temp.bitrate.file_link).
+                  pipe(fs.createWriteStream(filePath,{flags:'w'})).
+                  on('close',()=>{
+                    temp.bitrate.show_link = "http://106.14.13.178:3000/song/music/"+song_id;
+                    console.log(temp.bitrate.show_link);
+                    res.end(JSON.stringify(temp));
                     _my_db.insertData(key.collection, temp);
-                    return;
-                } else {
-                    res.end("not found");
-                }
-            });
+                  });
+              } else {
+                  res.end("not found");
+              }
+          });
         }
     });
 });
@@ -125,4 +132,13 @@ router.get('/song_list/:tinguid/:artistid/:page', function(req, res, next) {
         });
     }
 });
+router.get('/music/:song_id',(req, res, next)=>{
+  let song_id = req.params.song_id;
+  var filePath = path.join(__dirname, './../music/')+song_id+".mp3";
+  let fReadStream = fs.createReadStream(filePath);
+  fReadStream.on("data",(chunk) => res.write(chunk,"binary"));
+  fReadStream.on("end",function () {
+      res.end();
+  });
+})
 module.exports = router;

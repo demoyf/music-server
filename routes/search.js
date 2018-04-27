@@ -22,7 +22,7 @@ router.get('/all/:query/:type', function(req, res, next) {
             res.end(JSON.parse(redis_result));
             return;
         } else {
-            let url = _music_url.QUERY_SEARCH_ALL_URL + "query=" + query + "&type=" + type;
+            let url = _music_url.QUERY_SEARCH_ALL_URL + "query=" + query + "&type=" + type+"&limit=100";
             _http.net_request(url).then((search_result) => {
                 console.log('search in net');
                 res.end(search_result);

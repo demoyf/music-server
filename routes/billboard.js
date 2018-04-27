@@ -38,13 +38,12 @@ router.get("/:type/:page", function(req, res, next) {
     });
 
     function _query_data(type) {
-        console.log("i'm in network");
         QUERY_UTIL.NET_getBillBoardByType(type, offset, limit).then((data) => {
             let temp = JSON.parse(data);
             let billboard = temp.billboard;
             let song_sum = billboard.billboard_songnum > 100 ? 100 : billboard.billboard_songnum;
             let temp_billboard = {
-                name: billboard.name,
+                name: billboard.name||key_and_type.real_name,
                 page_num: song_sum % 20 == 0 ? song_sum / 20 : Math.floor(song_sum / 20) + 1,
                 time: billboard.update_date
             }

@@ -28,6 +28,7 @@ router.get('/hot_artist', function(req, res, next) {
     // res.end("123");
     let artist_obj = {};
     _redis.getStringByKey(param.redis_name).then((name_result) => {
+
         if (name_result) {
             artist_obj.name = JSON.parse(name_result);
             _redis.get_form_list(param.key, page).then((redis_result) => {
@@ -45,14 +46,16 @@ router.get('/hot_artist', function(req, res, next) {
     });
     function my_get_data(){
       QUERY_UTIL.Net_getHotArtist().then((hot_result) => {
-          let data = JSON.parse(hot_result).artist;
-          let name = {
+          // let data = JSON.parse(hot_result);
+          let data = JSON.parse(hot_result);
+          let artist = data.artist;
+          let name_obj = {
             name:"热门歌手",
-            page_num:data.artist.length%20==0?data.artist.length/20:Math.floor(data.artist.length/20)+1
+            page_num:artist.length%20==0?artist.length/20:Math.floor(artist.length/20)+1
           }
           let obj = {
-            artist:data.slice(0,20),
-            name:name
+            artist:artist.slice(0,20),
+            name:name_obj
           }
           res.end(JSON.stringify(obj));
       });
