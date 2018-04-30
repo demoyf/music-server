@@ -64,11 +64,11 @@ router.get('/get_song/:song_id', function(req, res, next) {
               if (song_data) {
                   let temp = JSON.parse(song_data);
                   temp._id = temp.songinfo.song_id;
-                  var filePath = path.join(__dirname, './../music/')+song_id+".mp3";
+                  var filePath = path.join(__dirname, './../../Apache24/htdocs/music/')+song_id+".mp3";
                   _REQUEST(temp.bitrate.file_link).
                   pipe(fs.createWriteStream(filePath,{flags:'w'})).
                   on('close',()=>{
-                    temp.bitrate.show_link = "http://106.14.13.178:3000/song/music/"+song_id;
+                    temp.bitrate.show_link = "http://106.14.13.168/music/"+song_id+".mp3";
                     console.log(temp.bitrate.show_link);
                     res.end(JSON.stringify(temp));
                     _my_db.insertData(key.collection, temp);
@@ -132,13 +132,16 @@ router.get('/song_list/:tinguid/:artistid/:page', function(req, res, next) {
         });
     }
 });
-router.get('/music/:song_id',(req, res, next)=>{
-  let song_id = req.params.song_id;
-  var filePath = path.join(__dirname, './../music/')+song_id+".mp3";
-  let fReadStream = fs.createReadStream(filePath);
-  fReadStream.on("data",(chunk) => res.write(chunk,"binary"));
-  fReadStream.on("end",function () {
-      res.end();
-  });
-})
+// router.get('/music/:song_id',(req, res, next)=>{
+//   let song_id = req.params.song_id;
+//   var filePath = path.join(__dirname, './../music/')+song_id+".mp3";
+//   let fReadStream = fs.createReadStream(filePath);
+//   let length = 0;
+//   fReadStream.on("data",(chunk) =>{
+//     res.write(chunk,"binary")
+//   });
+//   fReadStream.on("end",function () {
+//     res.end();
+//   });
+// })
 module.exports = router;
