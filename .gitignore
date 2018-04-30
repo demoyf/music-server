@@ -1,5 +1,6 @@
 # windows
 node_modules/
+music/
 
 # log file
 *.log
