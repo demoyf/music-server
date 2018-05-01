@@ -12,7 +12,6 @@ router.get('/new_album', (req, res, next) => {
     res.type('text/json');
     _redis.getStringByKey(key.key).then((redis_album) => {
         if (redis_album) {
-            console.log("album in redis");
             res.end(JSON.parse(redis_album));
             return;
         } else {
@@ -35,7 +34,6 @@ router.get('/artist_album/:ting_uid/:page', (req, res, next) => {
     res.type("text/json");
     _redis.getStringByKey(param.redis_name).then((redis_name_data) => {
         if (redis_name_data) {
-            console.log("artist album in redis");
             obj.page_info = JSON.parse(redis_name_data);
             _redis.get_form_list(param.key, page - 1).then((redis_data) => {
                 if (redis_data) {
@@ -62,7 +60,6 @@ router.get('/artist_album/:ting_uid/:page', (req, res, next) => {
 
     // 没有数据，获取并且存储到redis
     function net_get() {
-        console.log("artist album in net");
         // 一个url负责后续的redis存储，一个是获取一个临时的数据
         let temp_url = _music_url.QUERY_ARTIST_ALBUM_URL + "tinguid=" + ting_uid + "&limits=" + 100;
         let url = temp_url + "&limits=" + 20;
