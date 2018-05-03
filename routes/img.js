@@ -17,7 +17,7 @@ router.post('/upload', function(req, res, next) {
       var result_path = "http://106.14.13.178/image"+ "/" + fileName;
       fs.rename(files.img.path, newPath, function () {
           res.type("text/json");
-          res.end(JSON.stringify({error:0,data:[newPath]}));
+          res.end(JSON.stringify({error:0,data:[result_path]}));
       });
   });
 });
