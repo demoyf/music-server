@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 /* GET users listing. */
 router.post('/upload', function(req, res, next) {
-  var dirname = path.join(__dirname, './../../Apache/htdocs/image');
+  var dirname = path.join(__dirname, './../../Apache24/htdocs/image');
   var form = new formidable.IncomingForm();
   form.encoding = "utf-8";
   form.uploadDir = dirname;
