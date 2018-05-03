@@ -13,7 +13,8 @@ router.post('/upload', function(req, res, next) {
   form.parse(req, function (err, fields, files) {
       if (err)return;
       var fileName = new Date().getTime() + ".png";
-      var newPath = "http://106.14.13.178/image"+ "/" + fileName;
+      var newPath = dirname + "/" + fileName;
+      var result_path = "http://106.14.13.178/image"+ "/" + fileName;
       fs.rename(files.img.path, newPath, function () {
           res.type("text/json");
           res.end(JSON.stringify({error:0,data:[newPath]}));
