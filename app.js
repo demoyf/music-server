@@ -12,6 +12,7 @@ var artist = require('./routes/artist');
 var song_routes = require('./routes/song');
 var search_routes = require('./routes/search');
 var album_routes = require('./routes/album');
+var img_routes = require('./routes/img');
 var app = express();
 
 // view engine setup
@@ -32,6 +33,7 @@ app.all('*', function(req, res, next) {
     res.type("text/json");
     // 允许访问的域名
     res.header("Access-Control-Allow-Origin", "*");
+
     //  允许发送凭据
     res.header("Access-Control-Allow-Credentials",true);
     // 允许接收的请求头
@@ -54,6 +56,7 @@ app.use('/artist', artist);
 app.use('/song', song_routes);
 app.use('/search', search_routes);
 app.use('/album', album_routes);
+app.use('/img',img_routes);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
