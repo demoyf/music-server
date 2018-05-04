@@ -13,6 +13,7 @@ var song_routes = require('./routes/song');
 var search_routes = require('./routes/search');
 var album_routes = require('./routes/album');
 var img_routes = require('./routes/img');
+var forum_routes = require('./routes/forum');
 var app = express();
 
 // view engine setup
@@ -26,18 +27,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 // all 设置一些共用的属性，例如返回的数据类型，跨域的一些头
 app.all('*', function(req, res, next) {
 	// 返回结果为json
     res.type("text/json");
     // 允许访问的域名
     res.header("Access-Control-Allow-Origin", "*");
-
     //  允许发送凭据
     res.header("Access-Control-Allow-Credentials",true);
     // 允许接收的请求头
-    res.header("Access-dControl-Allow-Headers", "Content-Type,Content-Length,Authorization,X-Powered-By,X-Requested-With");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length,Authorization,X-Powered-By,X-Requested-With");
     // 请求方法
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     res.header("X-Powered-By", '3.2.1');
@@ -50,13 +49,14 @@ app.all('*', function(req, res, next) {
 });
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/user', users);
 app.use('/billboard', billboard);
 app.use('/artist', artist);
 app.use('/song', song_routes);
 app.use('/search', search_routes);
 app.use('/album', album_routes);
 app.use('/img',img_routes);
+app.use('/forum',forum_routes);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
