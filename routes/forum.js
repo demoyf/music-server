@@ -8,6 +8,7 @@ router.post('/publish',(req,res,next)=>{
     id:'',
     msg:'发布失败'
   }
+  info.report_count = 0;
   _db.getId('music_forum').then((data)=>{
     info.is_ban = false;
     info._id = data+1;
@@ -22,45 +23,117 @@ router.post('/publish',(req,res,next)=>{
     res.end(JSON.stringify(result));
   });
 });
-router.get('/time_forum/:offset/:limit',(req,res,next)=>{
+router.get('/forum_content/:id',(req,res,next)=>{
+  let id = parseInt(req.params.id);
+  _db.queryData('music_forum',{'_id':id}).then((data)=>{
+    res.end(JSON.stringify(data));
+  });
+});
+
+router.get('/time_forum/:sort/:offset/:limit',(req,res,next)=>{
   let limit = parseInt(req.params.limit||10);
   let offset = parseInt(req.params.offset||0);
-  _db.queryDataSort('music_forum',{},{'publish_time':-1},offset,limit).then((data)=>{
+  let sort = req.params.sort;
+  let sort_obj = {'publish_time':-1};
+  if(sort==1){
+    sort_obj ={
+      'publish_time':1
+    }
+  }
+  _db.queryDataSort('music_forum',{'is_ban':false},sort_obj,offset,limit).then((data)=>{
       res.end(JSON.stringify(data));
   });
 });
-router.get('/hot_forum/:offset/:limit',(req,res,next)=>{
+router.get('/hot_forum/:sort/:offset/:limit',(req,res,next)=>{
   let limit = parseInt(req.params.limit||10);
   let offset = parseInt(req.params.offset||0);
-  _db.queryDataSort('music_forum',{},
-  {'comment_count':-1},offset,limit).then((data)=>{
+  let sort = req.params.sort;
+  let sort_obj = {'comment_count':-1};
+  if(sort==1){
+    sort_obj ={
+      'comment_count':1
+    }
+  }
+  _db.queryDataSort('music_forum',{'is_ban':false},
+  sort_obj,offset,limit).then((data)=>{
       res.end(JSON.stringify(data));
   });
 });
-router.get('/type_time/:type/:offset/:limit',(req,res,next)=>{
+router.get('/type_time/:type/:sort/:offset/:limit',(req,res,next)=>{
   let limit = parseInt(req.params.limit||10);
   let offset = parseInt(req.params.offset||0);
   let type = parseInt(req.params.type||1);
-  _db.queryDataSort('music_forum',{'type':type},
-  {'publish_time':-1},offset,limit).then((data)=>{
+  let sort = req.params.sort;
+  let sort_obj = {'publish_time':-1};
+  if(sort==1){
+    sort_obj ={
+      'publish_time':1
+    }
+  }
+  _db.queryDataSort('music_forum',{'type':type,'is_ban':false},
+  sort_obj,offset,limit).then((data)=>{
       res.end(JSON.stringify(data));
   });
 });
-router.get('/type_comment/:type/:offset/:limit',(req,res,next)=>{
+router.get('/type_comment/:type/:sort/:offset/:limit',(req,res,next)=>{
   let limit = parseInt(req.params.limit||10);
   let offset = parseInt(req.params.offset||0);
   let type = parseInt(req.params.type||1);
-  _db.queryDataSort('music_forum',{'type':type},
-  {'comment_count':-1},offset,limit).then((data)=>{
+  let sort = req.params.sort;
+  let sort_obj = {'comment_count':-1};
+  if(sort==1){
+    sort_obj ={
+      'comment_count':1
+    }
+  }
+  _db.queryDataSort('music_forum',{'type':type,'is_ban':false},
+  sort_obj,offset,limit).then((data)=>{
       res.end(JSON.stringify(data));
   });
 });
-router.get('/search/:query',(req,res,next)=>{
+router.get('/search/:query/:sort/:type/:offset/:limit',(req,res,next)=>{
+  let limit = parseInt(req.params.limit||10);
+  let offset = parseInt(req.params.offset||0);
   let query = decodeURI(req.params.query);
   let temp = new RegExp(""+ query+"","ig");
-  _db.queryDataSort('music_forum',{'title':temp},
-  {'comment_count':-1},0,100).then((data)=>{
+  let sort = req.params.sort;
+  let type = parseInt(req.params.type);
+  let sort_obj = {'comment_count':1};
+  if(sort==2){
+    sort_obj = {'comment_count':-1};
+  }else if(sort==3){
+    sort_obj = {'publish_time':1};
+  }else if(sort==4){
+    sort_obj = {'publish_time':-1};
+  }
+  let search_obj={'title':temp};
+  if(type!=0){
+    search_obj = {'title':temp,'type':type};
+  }
+  _db.queryDataSort('music_forum',search_obj,
+    sort_obj,offset,limit).then((data)=>{
       res.end(JSON.stringify(data));
   });
 })
+router.get('/report/:id',(req,res,next)=>{
+  let user_name = parseInt(req.params.id);
+  let result ={
+    success:false,
+    msg:'举报失败'
+  };
+  console.log(user_name);
+  _db.queryData('music_forum',{'_id':user_name}).then((data)=>{
+    if(data){
+      let report = data.report_count+1;
+      _db.updateData('music_forum',{'_id':user_name},{'report_count':report},(data)=>{
+        if(data){
+          result.success = true;
+        }
+        res.end(JSON.stringify(result));
+      });
+    }else{
+      res.end(JSON.stringify(result));
+    }
+  })
+});
 module.exports = router;

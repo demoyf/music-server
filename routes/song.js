@@ -22,7 +22,6 @@ router.get('/new_song/:page', function(req, res, next) {
             result_obj.name = JSON.parse(name_result);
             _redis.get_form_list(param.key, (page - 1)).then((song_result) => {
                 if (song_result) {
-                    console.log('new song in redis');
                     result_obj.song_list = JSON.parse(song_result);
                     res.end(JSON.stringify(result_obj));
                     return;
@@ -37,9 +36,7 @@ router.get('/new_song/:page', function(req, res, next) {
     });
 
     function get_data() {
-      console.log("get data error");
         QUERY_UTIL.NET_getNewSong().then((net_song) => {
-            console.log('new song in net');
             let temp = JSON.parse(net_song);
             let length = temp.song_list.length;
             temp.name = {
@@ -69,7 +66,6 @@ router.get('/get_song/:song_id', function(req, res, next) {
                   pipe(fs.createWriteStream(filePath,{flags:'w'})).
                   on('close',()=>{
                     temp.bitrate.show_link = "http://106.14.13.168/music/"+song_id+".mp3";
-                    console.log(temp.bitrate.show_link);
                     res.end(JSON.stringify(temp));
                     _my_db.insertData(key.collection, temp);
                   });
