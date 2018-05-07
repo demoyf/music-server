@@ -29,7 +29,6 @@ router.get('/forum_content/:id',(req,res,next)=>{
     res.end(JSON.stringify(data));
   });
 });
-
 router.get('/time_forum/:sort/:offset/:limit',(req,res,next)=>{
   let limit = parseInt(req.params.limit||10);
   let offset = parseInt(req.params.offset||0);
@@ -121,7 +120,6 @@ router.get('/report/:id',(req,res,next)=>{
     success:false,
     msg:'举报失败'
   };
-  console.log(user_name);
   _db.queryData('music_forum',{'_id':user_name}).then((data)=>{
     if(data){
       let report = data.report_count+1;
@@ -135,5 +133,18 @@ router.get('/report/:id',(req,res,next)=>{
       res.end(JSON.stringify(result));
     }
   })
+});
+router.get('/my_forum/:user_id',(req,res,next)=>{
+  let user_id = req.params.user_id;
+  _db.queryDataSort('music_forum',{'user_id':user_id},
+    {'publish_time':1},0,100).then((data)=>{
+      res.end(JSON.stringify(data));
+  });
+});
+router.get('/report_forum',(req,res,next)=>{
+  _db.queryDataSort('music_forum',{},
+    {'report_count':-1},0,100).then((data)=>{
+      res.end(JSON.stringify(data));
+  });
 });
 module.exports = router;

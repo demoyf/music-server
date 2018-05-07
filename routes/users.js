@@ -121,4 +121,83 @@ router.get('/report/:user_name',(req,res,next)=>{
     }
   })
 });
+router.get('/update_img/:user_id/:picture_id',(req,res,next)=>{
+  let _id = req.params.user_id;
+  let picture_id = parseInt(req.params.picture_id);
+  let result = {
+    success:false
+  }
+  _db.updateData('user',{'_id':_id},{'picture':picture_id},(data)=>{
+    if(data){
+      result.success = true;
+    }
+    res.end(JSON.stringify(result));
+  });
+});
+router.post('/update_info/:user_id',(req,res,next)=>{
+  let _id = req.params.user_id;
+  let info = req.body;
+  let result = {
+    success:false
+  }
+  _db.updateData('user',{'_id':_id},info,(data)=>{
+    if(data){
+      result.success = true;
+    }
+    res.end(JSON.stringify(result));
+  });
+});
+router.post('/add_collect/',(req,res,next)=>{
+  let body = req.body;
+  let type = body.type;
+  let check_obj = {
+  }
+  // song
+  if(type==1){
+    check_obj = {
+      'user_id':body.user_id,
+      'song_id':body.song_id
+    }
+  }else if(type==2){
+    // artist
+    check_obj = {
+      'user_id':body.user_id,
+      'ting_uid':body.ting_uid,
+      'artist_id':body.artist_id
+    }
+  }else{
+    check_obj = {
+      'user_id':body.user_id,
+      'album_id':body.album_id,
+    }
+  }
+  let result = {
+    success:false,
+    msg:'已经收藏过了'
+  }
+  _db.queryData('music_collection',check_obj).then((data)=>{
+    if(!data||data.length==0){
+      _db.getId('music_collection').then((second)=>{
+        body._id = second+1;
+        _db.insertData('music_collection',body,(err,third)=>{
+          if(!err){
+            result.success = true;
+            res.end(JSON.stringify(result));
+          }
+        });
+      });
+    }else{
+      res.end(JSON.stringify(result));
+    }
+  }).catch(()=>{
+    result.msg = '收藏失败';
+    res.end(JSON.stringify(result));
+  });
+});
+router.get('/collect/:user_id',(req,res,next)=>{
+  let id = req.params.user_id;
+  _db.queryDataSort('music_collection',{'user_id':id},{},0,100).then((data)=>{
+      res.end(JSON.stringify(data));
+  });
+});
 module.exports = router;

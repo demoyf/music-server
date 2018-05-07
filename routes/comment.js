@@ -73,4 +73,12 @@ router.get('/delete/:id/:forum_id',(req,res,next)=>{
     }
   });
 });
+router.get('/my_comment/:user_id',(req,res,next)=>{
+  let user_id = req.params.user_id;
+  _db.queryDataSort('comment',
+  {$or:[{'user_id':user_id},{'my_id':user_id},
+  {'replay_to_user_id':user_id}]},{'publish_time':1},0,100).then((data)=>{
+    res.end(JSON.stringify(data));
+  });
+});
 module.exports = router;
