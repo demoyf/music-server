@@ -200,4 +200,30 @@ router.get('/collect/:user_id',(req,res,next)=>{
       res.end(JSON.stringify(data));
   });
 });
+router.get('/has_new/:user_id',(req,res,next)=>{
+  let user_id = req.params.user_id;
+  let result = {
+    has_new:false
+  }
+  _db.queryDataSort('comment',{$or:[{'user_id':user_id,'my_id':{$ne:user_id},'type':1,'is_new':true},
+  {'replay_to_user_id':user_id,'type':2,'is_new':true}]},{},0,10).then((data)=>{
+    if(data&&data.length>0){
+      result.has_new = true;
+    }
+    res.end(JSON.stringify(result));
+  });
+});
+router.get('/update_new/:user_id',(req,res,next)=>{
+  let user_id = req.params.user_id;
+  let result = {
+    has_new:false
+  }
+  _db.updateData('comment',{$or:[{'user_id':user_id,'my_id':{$ne:user_id},'type':1,'is_new':true},
+  {'replay_to_user_id':user_id,'type':2,'is_new':true}]},{'is_new':false},(data)=>{
+    if(data){
+      result.has_new = true;
+    }
+    res.end(JSON.stringify(result));
+  });
+});
 module.exports = router;
