@@ -226,4 +226,9 @@ router.get('/update_new/:user_id',(req,res,next)=>{
     res.end(JSON.stringify(result));
   });
 });
+router.get('/all',(req,res,next)=>{
+  _db.queryDataSort('user',{},{'report_count':-1},0,100).then((data)=>{
+    res.end(JSON.stringify(data));
+  });
+});
 module.exports = router;

@@ -81,4 +81,9 @@ router.get('/my_comment/:user_id',(req,res,next)=>{
     res.end(JSON.stringify(data));
   });
 });
+router.get('/all',(req,res,next)=>{
+  _db.queryDataSort('comment',{},{},0,100).then((data)=>{
+    res.end(JSON.stringify(data));
+  });
+});
 module.exports = router;
